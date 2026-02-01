@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: eda
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/eda?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: root1234
+  jpa:
+    hibernate:
+      ddl-auto: update # 애플리케이션 시작 시 엔티티에 맞춰 스키마를 업데이트합니다.
+    properties:
+      hibernate:
+        format_sql: true # SQL 로그를 보기 좋게 정렬합니다.
+        dialect: org.hibernate.dialect.MySQLDialect # 이 줄을 추가합니다.
+    show-sql: true # 실행되는 SQL 쿼리를 로그로 보여줍니다.
