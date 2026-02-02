@@ -1,0 +1,11 @@
+### Say hello
+GET http://localhost:8080/hello
+
+### Create a new order
+POST http://localhost:8080/orders
+Content-Type: application/json
+
+{
+  "productId": "PROD-12345",
+  "quantity": 2
+}
