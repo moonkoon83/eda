@@ -1,6 +1,6 @@
-package com.pulmuone.eda.service;
+package com.pulmuone.eda.application.service;
 
-import com.pulmuone.eda.repository.OrderRepository;
+import com.pulmuone.eda.application.port.out.LoadOrderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class OrderNumberGenerator {
     private static final Random RANDOM = new Random();
     private static final int MAX_RETRIES = 5; // Max retries for unique number generation
 
-    private final OrderRepository orderRepository;
+    private final LoadOrderPort loadOrderPort;
 
     public String generate() {
         int retries = 0;
@@ -29,7 +29,7 @@ public class OrderNumberGenerator {
                 // This might indicate a very high transaction rate or a bug
                 throw new IllegalStateException("Failed to generate a unique order number after " + MAX_RETRIES + " retries.");
             }
-        } while (orderRepository.existsByOrderNumber(orderNumber));
+        } while (loadOrderPort.existsByOrderNumber(orderNumber));
         return orderNumber;
     }
 

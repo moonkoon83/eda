@@ -1,24 +1,24 @@
-package com.pulmuone.eda.service;
+package com.pulmuone.eda.application.service;
 
+import com.pulmuone.eda.application.port.in.CreateOrderUseCase;
+import com.pulmuone.eda.application.port.out.SaveOrderPort;
 import com.pulmuone.eda.domain.Order;
-import com.pulmuone.eda.domain.OrderStatus;
-import com.pulmuone.eda.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+class OrderService implements CreateOrderUseCase {
 
-    private final OrderRepository orderRepository;
     private final OrderNumberGenerator orderNumberGenerator;
+    private final SaveOrderPort saveOrderPort;
 
     @Transactional
+    @Override
     public Order createOrder(String productId, Integer quantity) {
         String orderNumber = orderNumberGenerator.generate();
         Order order = new Order(orderNumber, productId, quantity);
-        return orderRepository.save(order);
+        return saveOrderPort.save(order);
     }
 }
-

@@ -1,4 +1,4 @@
-package com.pulmuone.eda.controller.dto;
+package com.pulmuone.eda.adapter.in.web.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

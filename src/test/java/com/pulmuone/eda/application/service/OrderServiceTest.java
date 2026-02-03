@@ -1,8 +1,8 @@
-package com.pulmuone.eda.service;
+package com.pulmuone.eda.application.service;
 
+import com.pulmuone.eda.application.port.out.SaveOrderPort;
 import com.pulmuone.eda.domain.Order;
 import com.pulmuone.eda.domain.OrderStatus;
-import com.pulmuone.eda.repository.OrderRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ class OrderServiceTest {
     private OrderService orderService;
 
     @Mock
-    private OrderRepository orderRepository;
+    private SaveOrderPort saveOrderPort;
 
     @Mock
     private OrderNumberGenerator orderNumberGenerator;
@@ -36,7 +36,7 @@ class OrderServiceTest {
         Order newOrder = new Order(fakeOrderNumber, productId, quantity);
 
         when(orderNumberGenerator.generate()).thenReturn(fakeOrderNumber);
-        when(orderRepository.save(any(Order.class))).thenReturn(newOrder);
+        when(saveOrderPort.save(any(Order.class))).thenReturn(newOrder);
 
         // when
         Order createdOrder = orderService.createOrder(productId, quantity);
@@ -50,6 +50,6 @@ class OrderServiceTest {
 
         // verify interactions
         verify(orderNumberGenerator, times(1)).generate();
-        verify(orderRepository, times(1)).save(any(Order.class));
+        verify(saveOrderPort, times(1)).save(any(Order.class));
     }
 }
