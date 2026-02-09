@@ -1,0 +1,8 @@
+.git
+.gradle
+.idea
+build
+src/**/test/
+*.iml
+run-db.sh
+build-docker-image.sh

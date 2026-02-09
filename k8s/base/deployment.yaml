@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eda-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eda-app
+  template:
+    metadata:
+      labels:
+        app: eda-app
+    spec:
+      containers:
+      - name: eda-app
+        image: eda-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              name: eda-profile-env # Kustomize에 의해 환경별로 생성될 ConfigMap 이름
+              key: SPRING_PROFILES_ACTIVE
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: eda-profile-env # Kustomize에 의해 환경별로 생성될 ConfigMap 이름
+              key: DB_HOST
