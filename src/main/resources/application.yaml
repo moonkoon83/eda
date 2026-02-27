@@ -2,7 +2,14 @@ spring:
   application:
     name: eda
 
-    jpa:
+logging:
+  level:
+    com.pulmuone.eda: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.orm.jpa: DEBUG
+
+  jpa:
+
       hibernate:
         ddl-auto: update
       show-sql: true
