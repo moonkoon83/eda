@@ -26,6 +26,11 @@ class OrderPersistenceAdapter implements SaveOrderPort, LoadOrderPort {
     }
 
     @Override
+    public Optional<Order> findByOrderNumber(String orderNumber) {
+        return orderJpaRepository.findByOrderNumber(orderNumber);
+    }
+
+    @Override
     public Order save(Order order) {
         return orderJpaRepository.save(order);
     }
@@ -33,4 +38,5 @@ class OrderPersistenceAdapter implements SaveOrderPort, LoadOrderPort {
 
 interface OrderJpaRepository extends JpaRepository<Order, Long> {
     boolean existsByOrderNumber(String orderNumber);
+    Optional<Order> findByOrderNumber(String orderNumber);
 }

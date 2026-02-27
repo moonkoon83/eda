@@ -1,16 +1,16 @@
 package com.pulmuone.eda.application.service;
 
-import com.pulmuone.eda.application.port.out.DeductPointPort;
-import com.pulmuone.eda.application.port.out.DeductStockPort;
 import com.pulmuone.eda.application.port.out.SaveOrderPort;
 import com.pulmuone.eda.domain.Order;
 import com.pulmuone.eda.domain.OrderStatus;
+import com.pulmuone.eda.domain.event.OrderCreatedEvent;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
-    @InjectMocks
     private OrderService orderService;
 
     @Mock
@@ -29,20 +28,22 @@ class OrderServiceTest {
     private OrderNumberGenerator orderNumberGenerator;
 
     @Mock
-    private DeductStockPort deductStockPort;
+    private ApplicationEventPublisher eventPublisher;
 
-    @Mock
-    private DeductPointPort deductPointPort;
+    @BeforeEach
+    void setUp() {
+        // 명시적으로 생성자 주입
+        orderService = new OrderService(orderNumberGenerator, saveOrderPort, eventPublisher);
+    }
 
     @Test
-    @DisplayName("신규 주문을 생성하면, 재고와 적립금이 차감되고 주문 번호가 부여되며 'COMPLETED' 상태여야 한다")
-    void createOrder_ShouldCreateOrderWithNumberInCompletedState() {
+    @DisplayName("신규 주문을 생성하면, 주문이 저장되고 'OrderCreatedEvent'가 발행되어야 한다")
+    void createOrder_ShouldSaveOrderAndPublishEvent() {
         // given
         String productId = "test-product-id";
         int quantity = 10;
         String fakeOrderNumber = "202602031122330001";
         Order newOrder = Order.create(fakeOrderNumber, productId, quantity);
-        newOrder.complete(); // Expected final state after all logic
 
         when(orderNumberGenerator.generate()).thenReturn(fakeOrderNumber);
         when(saveOrderPort.save(any(Order.class))).thenReturn(newOrder);
@@ -53,14 +54,13 @@ class OrderServiceTest {
         // then
         assertThat(createdOrder).isNotNull();
         assertThat(createdOrder.getOrderNumber()).isEqualTo(fakeOrderNumber);
-        assertThat(createdOrder.getProductId()).isEqualTo(productId);
-        assertThat(createdOrder.getQuantity()).isEqualTo(quantity);
-        assertThat(createdOrder.getStatus()).isEqualTo(OrderStatus.COMPLETED);
+        assertThat(createdOrder.getStatus()).isEqualTo(OrderStatus.PENDING);
 
-        // verify interactions
+        // verify
         verify(orderNumberGenerator, times(1)).generate();
-        verify(deductStockPort, times(1)).deduct(productId, quantity);
-        verify(deductPointPort, times(1)).deduct(productId, quantity);
         verify(saveOrderPort, times(1)).save(any(Order.class));
+        
+        // publishEvent는 ApplicationEventPublisher 인터페이스의 메서드임을 확실히 검증
+        verify(eventPublisher, times(1)).publishEvent(any(OrderCreatedEvent.class));
     }
 }
