@@ -1,5 +1,7 @@
 package com.pulmuone.eda.application.service;
 
+import com.pulmuone.eda.application.port.out.DeductPointPort;
+import com.pulmuone.eda.application.port.out.DeductStockPort;
 import com.pulmuone.eda.application.port.out.SaveOrderPort;
 import com.pulmuone.eda.domain.Order;
 import com.pulmuone.eda.domain.OrderStatus;
@@ -26,14 +28,21 @@ class OrderServiceTest {
     @Mock
     private OrderNumberGenerator orderNumberGenerator;
 
+    @Mock
+    private DeductStockPort deductStockPort;
+
+    @Mock
+    private DeductPointPort deductPointPort;
+
     @Test
-    @DisplayName("신규 주문을 생성하면, 주문 번호가 부여되고 'PENDING' 상태여야 한다")
-    void createOrder_ShouldCreateOrderWithNumberInPendingState() {
+    @DisplayName("신규 주문을 생성하면, 재고와 적립금이 차감되고 주문 번호가 부여되며 'COMPLETED' 상태여야 한다")
+    void createOrder_ShouldCreateOrderWithNumberInCompletedState() {
         // given
         String productId = "test-product-id";
         int quantity = 10;
         String fakeOrderNumber = "202602031122330001";
-        Order newOrder = new Order(fakeOrderNumber, productId, quantity);
+        Order newOrder = Order.create(fakeOrderNumber, productId, quantity);
+        newOrder.complete(); // Expected final state after all logic
 
         when(orderNumberGenerator.generate()).thenReturn(fakeOrderNumber);
         when(saveOrderPort.save(any(Order.class))).thenReturn(newOrder);
@@ -46,10 +55,12 @@ class OrderServiceTest {
         assertThat(createdOrder.getOrderNumber()).isEqualTo(fakeOrderNumber);
         assertThat(createdOrder.getProductId()).isEqualTo(productId);
         assertThat(createdOrder.getQuantity()).isEqualTo(quantity);
-        assertThat(createdOrder.getStatus()).isEqualTo(OrderStatus.PENDING);
+        assertThat(createdOrder.getStatus()).isEqualTo(OrderStatus.COMPLETED);
 
         // verify interactions
         verify(orderNumberGenerator, times(1)).generate();
+        verify(deductStockPort, times(1)).deduct(productId, quantity);
+        verify(deductPointPort, times(1)).deduct(productId, quantity);
         verify(saveOrderPort, times(1)).save(any(Order.class));
     }
 }
