@@ -2,11 +2,11 @@ spring:
   application:
     name: eda
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
+    jpa:
       hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-    show-sql: true
+        ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+  
