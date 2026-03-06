@@ -2,9 +2,9 @@ package com.pulmuone.eda.adapter.out.point;
 
 import com.pulmuone.eda.application.port.out.DeductPointPort;
 import com.pulmuone.eda.domain.PointShortageException;
+import com.pulmuone.eda.domain.event.OrderCreatedEvent;
 import com.pulmuone.eda.domain.event.PointDeductedEvent;
 import com.pulmuone.eda.domain.event.PointFailedEvent;
-import com.pulmuone.eda.domain.event.StockDeductedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -24,8 +24,8 @@ public class PointEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void onStockDeducted(StockDeductedEvent event) {
-        log.info("[Point Service] Subscribed StockDeductedEvent for Order: {}", event.getOrderNumber());
+    public void onOrderCreated(OrderCreatedEvent event) {
+        log.info("[Point Service] Subscribed OrderCreatedEvent for Order: {}", event.getOrderNumber());
 
         try {
             // 2단계 9: 적립금 차감 시도

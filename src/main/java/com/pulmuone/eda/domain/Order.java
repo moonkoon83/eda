@@ -26,6 +26,9 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    private boolean isStockDeducted = false;
+    private boolean isPointDeducted = false;
+
     private Order(String orderNumber, String productId, Integer quantity) {
         validate(orderNumber, productId, quantity);
         this.orderNumber = orderNumber;
@@ -47,6 +50,22 @@ public class Order {
         }
         if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero.");
+        }
+    }
+
+    public void completeStock() {
+        this.isStockDeducted = true;
+        checkCompletion();
+    }
+
+    public void completePoint() {
+        this.isPointDeducted = true;
+        checkCompletion();
+    }
+
+    private void checkCompletion() {
+        if (isStockDeducted && isPointDeducted) {
+            this.status = OrderStatus.COMPLETED;
         }
     }
 
