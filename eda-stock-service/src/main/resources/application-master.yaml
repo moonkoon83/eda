@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/eda?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: root1234
+  jpa:
+    hibernate:
+      ddl-auto: validate # 운영 환경에서는 스키마가 자동으로 변경/삭제되지 않도록 'validate'로 설정하여 안정성을 높입니다.
+    show-sql: false # 운영 환경에서는 SQL 로그를 출력하지 않도록 설정합니다.

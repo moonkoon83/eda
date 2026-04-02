@@ -1,1 +1,5 @@
 rootProject.name = 'eda'
+include 'eda-common'
+include 'eda-order-service'
+include 'eda-stock-service'
+include 'eda-point-service'
