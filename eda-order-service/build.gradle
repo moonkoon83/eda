@@ -7,4 +7,6 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.awaitility:awaitility'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
 }

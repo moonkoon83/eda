@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: point-service
+  namespace: local
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: point-service
+  template:
+    metadata:
+      labels:
+        app: point-service
+    spec:
+      containers:
+      - name: point-service
+        image: point-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8082
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: KAFKA_HOST
+          value: kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: point-service
+  namespace: local
+spec:
+  ports:
+  - port: 8082
+  selector:
+    app: point-service
